@@ -3,9 +3,6 @@ layout: post
 title: Temporal Update Note!
 ---
 
-# <b>Update Version Temporal..!!!</b>
-
-## <b>Repository Temporal Project</b>
 Repository temporal disimpan pada repo [git-ops](https://bitbucket.org/loyaltoid/gitops-k8s/src/master/) pada branch tertentu sesuai dengan project.
 Pada saat dokumentasi ini dibuat update temporal sudah di lakukan pada project crypto yang disimpan pada [git-ops](https://bitbucket.org/loyaltoid/gitops-k8s/src/temporal-crypto/) pada branch **temporal-crypto**.
 
