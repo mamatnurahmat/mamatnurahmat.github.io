@@ -8,173 +8,335 @@
     <subtitle>DevOps Documentation Blog</subtitle>
     <icon>https://your-docusaurus-site.example.com/img/favicon.ico</icon>
     <entry>
-        <title type="html"><![CDATA[Mencari Jarum dalam Jerami? Gampang dengan Centralized Logging Loki!]]></title>
+        <title type="html"><![CDATA[Centralized Logging dengan Grafana Loki: Solusi Ringan untuk Manajemen Log Terpusat]]></title>
         <id>https://your-docusaurus-site.example.com/blog/2024/01/01/2024/centralized-logging-dengan-loki</id>
         <link href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/centralized-logging-dengan-loki"/>
         <updated>2024-01-01T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[Pernah nggak kalian harus SSH ke 10 server berbeda cuma buat nyari satu baris error di log? Capek banget kan? Kalau iya, berarti kalian butuh Centralized Logging.]]></summary>
-        <content type="html"><![CDATA[<p>Pernah nggak kalian harus SSH ke 10 server berbeda cuma buat nyari satu baris error di log? Capek banget kan? Kalau iya, berarti kalian butuh <strong>Centralized Logging</strong>.</p>
-<p>Hari ini kita kenalan sama <strong>Grafana Loki</strong>, si sistem log yang super ringan tapi bertenaga!</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="kenapa-harus-loki">Kenapa Harus Loki?<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/centralized-logging-dengan-loki#kenapa-harus-loki" class="hash-link" aria-label="Direct link to Kenapa Harus Loki?" title="Direct link to Kenapa Harus Loki?">​</a></h3>
-<p>Biasanya kalau kita ngomongin sistem log, yang muncul di pikiran adalah ELK (Elasticsearch, Logstash, Kibana). Tapi ELK itu seringkali berat di memori. Nah, Loki punya pendekatan yang beda:</p>
+        <summary type="html"><![CDATA[Loki Centralized Logging Banner]]></summary>
+        <content type="html"><![CDATA[<p><img decoding="async" loading="lazy" alt="Loki Centralized Logging Banner" src="https://your-docusaurus-site.example.com/assets/images/loki-logging-bb71e2e64d7c0c77ceb9bfb1a7702710.png" width="640" height="640" class="img_ev3q"></p>
+<p>Dalam lingkungan infrastruktur yang terdistribusi, proses penelusuran masalah melalui log menjadi tantangan tersendiri. Mengakses puluhan server secara terpisah hanya untuk mencari satu baris error merupakan pendekatan yang tidak efisien dan memakan waktu. <strong>Centralized logging</strong> hadir sebagai solusi dengan mengagregasi seluruh log ke dalam satu sistem terpusat.</p>
+<p>Artikel ini membahas <strong>Grafana Loki</strong> — sebuah sistem log terpusat yang dirancang untuk menjadi ringan, efisien, dan mudah diintegrasikan dengan ekosistem Grafana.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="mengapa-grafana-loki">Mengapa Grafana Loki?<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/centralized-logging-dengan-loki#mengapa-grafana-loki" class="hash-link" aria-label="Direct link to Mengapa Grafana Loki?" title="Direct link to Mengapa Grafana Loki?">​</a></h2>
+<p>Ketika membahas sistem log terpusat, solusi yang paling umum adalah <strong>ELK Stack</strong> (Elasticsearch, Logstash, Kibana). Meskipun sangat powerful, ELK seringkali membutuhkan resource yang signifikan, khususnya dalam hal konsumsi memori dan storage. Grafana Loki menawarkan pendekatan yang berbeda secara fundamental.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="perbedaan-pendekatan-loki-vs-elk">Perbedaan Pendekatan Loki vs ELK<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/centralized-logging-dengan-loki#perbedaan-pendekatan-loki-vs-elk" class="hash-link" aria-label="Direct link to Perbedaan Pendekatan Loki vs ELK" title="Direct link to Perbedaan Pendekatan Loki vs ELK">​</a></h3>
+<!-- -->
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="keunggulan-loki">Keunggulan Loki<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/centralized-logging-dengan-loki#keunggulan-loki" class="hash-link" aria-label="Direct link to Keunggulan Loki" title="Direct link to Keunggulan Loki">​</a></h3>
 <ul>
-<li><strong>Hanya Mengindeks Label:</strong> Loki nggak simpan semua teks log di indeks, cuma labelnya aja (mirip cara kerja Prometheus). Hasilnya? Jauh lebih ringan dan irit storage!</li>
-<li><strong>Sahabatan sama Grafana:</strong> Karena satu keluarga, visualisasi log di Grafana jadi smooth banget.</li>
+<li><strong>Indexing Berbasis Label</strong> — Loki tidak mengindeks seluruh konten log, melainkan hanya label metadata (serupa dengan cara kerja Prometheus). Hal ini menghasilkan penggunaan storage yang jauh lebih efisien.</li>
+<li><strong>Integrasi Native dengan Grafana</strong> — Sebagai bagian dari ekosistem Grafana, visualisasi dan eksplorasi log di Grafana Dashboard berjalan secara seamless.</li>
+<li><strong>Konsumsi Resource Minimal</strong> — Cocok untuk infrastruktur dengan keterbatasan resource.</li>
 </ul>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="cara-kerjanya-gimana">Cara Kerjanya Gimana?<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/centralized-logging-dengan-loki#cara-kerjanya-gimana" class="hash-link" aria-label="Direct link to Cara Kerjanya Gimana?" title="Direct link to Cara Kerjanya Gimana?">​</a></h3>
-<p>Cukup pasang agen kecil namanya <strong>Promtail</strong> atau <strong>Grafana Alloy</strong> di server kalian. Dia bakal kirim log ke Loki, lalu kalian tinggal liat log-nya sambil ngopi di dashboard Grafana.</p>
-<p>Gampang banget buat nyari error misalnya:
-<code>{app="payment-api", level="error"}</code></p>
-<p>Dan... BOOM! Semua log error dari aplikasi payment muncul dalam sekejap tanpa harus SSH sana-sini.</p>
-<p><strong>Kesimpulan:</strong>
-Loki itu kayak Google Search buat log aplikasi kalian, tapi versi yang jauh lebih hemat resource. Cocok banget buat startup atau infra yang mau scalabel tanpa bikin kantong bolong buat bayar server storage! 🪵✨</p>]]></content>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="arsitektur-sistem">Arsitektur Sistem<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/centralized-logging-dengan-loki#arsitektur-sistem" class="hash-link" aria-label="Direct link to Arsitektur Sistem" title="Direct link to Arsitektur Sistem">​</a></h2>
+<!-- -->
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="cara-kerja">Cara Kerja<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/centralized-logging-dengan-loki#cara-kerja" class="hash-link" aria-label="Direct link to Cara Kerja" title="Direct link to Cara Kerja">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="1-pengumpulan-log">1. Pengumpulan Log<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/centralized-logging-dengan-loki#1-pengumpulan-log" class="hash-link" aria-label="Direct link to 1. Pengumpulan Log" title="Direct link to 1. Pengumpulan Log">​</a></h3>
+<p>Agen ringan bernama <strong>Promtail</strong> atau <strong>Grafana Alloy</strong> diinstal pada setiap server. Agen ini bertugas:</p>
+<ul>
+<li>Membaca file log yang telah dikonfigurasi</li>
+<li>Menambahkan label metadata (nama aplikasi, level log, hostname, dll.)</li>
+<li>Mengirimkan log ke instance Loki</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="2-penyimpanan-dan-indexing">2. Penyimpanan dan Indexing<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/centralized-logging-dengan-loki#2-penyimpanan-dan-indexing" class="hash-link" aria-label="Direct link to 2. Penyimpanan dan Indexing" title="Direct link to 2. Penyimpanan dan Indexing">​</a></h3>
+<p>Loki menerima log dan menyimpannya dengan pendekatan unik:</p>
+<ul>
+<li><strong>Index</strong> hanya menyimpan metadata label</li>
+<li><strong>Chunk</strong> menyimpan konten log aktual dalam format terkompresi</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="3-query-dan-visualisasi">3. Query dan Visualisasi<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/centralized-logging-dengan-loki#3-query-dan-visualisasi" class="hash-link" aria-label="Direct link to 3. Query dan Visualisasi" title="Direct link to 3. Query dan Visualisasi">​</a></h3>
+<p>Loki menggunakan bahasa query bernama <strong>LogQL</strong> yang intuitif dan powerful:</p>
+<div class="language-logql codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-logql codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">{app="payment-api", level="error"}</span><br></span></code></pre></div></div>
+<p>Query di atas akan menampilkan seluruh log error dari aplikasi payment-api tanpa perlu mengakses server secara langsung.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="alur-pencarian-log">Alur Pencarian Log<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/centralized-logging-dengan-loki#alur-pencarian-log" class="hash-link" aria-label="Direct link to Alur Pencarian Log" title="Direct link to Alur Pencarian Log">​</a></h2>
+<!-- -->
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="perbandingan-loki-vs-elk-stack">Perbandingan Loki vs ELK Stack<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/centralized-logging-dengan-loki#perbandingan-loki-vs-elk-stack" class="hash-link" aria-label="Direct link to Perbandingan Loki vs ELK Stack" title="Direct link to Perbandingan Loki vs ELK Stack">​</a></h2>
+<table><thead><tr><th>Aspek</th><th>ELK Stack</th><th>Grafana Loki</th></tr></thead><tbody><tr><td><strong>Metode Indexing</strong></td><td>Full-text indexing</td><td>Label-only indexing</td></tr><tr><td><strong>Konsumsi Storage</strong></td><td>Tinggi</td><td>Rendah</td></tr><tr><td><strong>Konsumsi RAM</strong></td><td>Tinggi</td><td>Rendah</td></tr><tr><td><strong>Bahasa Query</strong></td><td>KQL / Lucene</td><td>LogQL</td></tr><tr><td><strong>Integrasi Grafana</strong></td><td>Melalui plugin</td><td>Native</td></tr><tr><td><strong>Kompleksitas Setup</strong></td><td>Tinggi</td><td>Rendah</td></tr><tr><td><strong>Cocok Untuk</strong></td><td>Enterprise besar</td><td>Tim kecil hingga besar</td></tr></tbody></table>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="kesimpulan">Kesimpulan<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/centralized-logging-dengan-loki#kesimpulan" class="hash-link" aria-label="Direct link to Kesimpulan" title="Direct link to Kesimpulan">​</a></h2>
+<p>Grafana Loki merupakan solusi <em>centralized logging</em> yang sangat efisien dan hemat resource. Dengan pendekatan <em>label-only indexing</em>, Loki mampu menangani volume log yang besar tanpa memerlukan infrastruktur storage yang masif. Integrasi native dengan Grafana menjadikannya pilihan yang ideal bagi tim yang telah mengadopsi ekosistem Grafana untuk monitoring.</p>
+<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>Rekomendasi</div><div class="admonitionContent_BuS1"><p>Untuk lingkungan produksi, pertimbangkan penggunaan <strong>Object Storage</strong> (seperti S3 atau MinIO) sebagai backend storage Loki agar mendapatkan durabilitas dan skalabilitas yang lebih baik.</p></div></div>]]></content>
+        <author>
+            <name>Mamat Nurahmat</name>
+            <uri>https://github.com/mamatnurahmat</uri>
+        </author>
+        <category label="Logging" term="Logging"/>
+        <category label="Monitoring" term="Monitoring"/>
+        <category label="DevOps" term="DevOps"/>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Monitoring Skala Sultan: Menjaga Metrik Tetap Awet dengan Grafana Mimir]]></title>
+        <title type="html"><![CDATA[Monitoring Metrik Berskala Besar dengan Grafana Mimir: Long-term Storage untuk Prometheus]]></title>
         <id>https://your-docusaurus-site.example.com/blog/2024/01/01/2024/metric-monitoring-dengan-mimir</id>
         <link href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/metric-monitoring-dengan-mimir"/>
         <updated>2024-01-01T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[Kalian pakai Prometheus buat monitoring? Keren! Tapi gimana kalau data metrik kalian makin hari makin gede sampai harddisk server nggak kuat lagi? Atau gimana kalau kalian punya banyak cluster Kubernetes dan mau liat semua grafiknya di satu tempat?]]></summary>
-        <content type="html"><![CDATA[<p>Kalian pakai Prometheus buat monitoring? Keren! Tapi gimana kalau data metrik kalian makin hari makin gede sampai harddisk server nggak kuat lagi? Atau gimana kalau kalian punya banyak cluster Kubernetes dan mau liat semua grafiknya di satu tempat?</p>
-<p>Jawabannya adalah: <strong>Grafana Mimir</strong>.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="apa-itu-grafana-mimir">Apa itu Grafana Mimir?<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/metric-monitoring-dengan-mimir#apa-itu-grafana-mimir" class="hash-link" aria-label="Direct link to Apa itu Grafana Mimir?" title="Direct link to Apa itu Grafana Mimir?">​</a></h3>
-<p>Mimir adalah sistem penyimpanan metrik jangka panjang (<em>Long-term Storage</em>) yang didesain untuk skalabilitas tinggi. Kalau Prometheus itu kayak gudang kecil yang rapi, Mimir itu kayak pusat logistik raksasa yang bisa menampung ribuan gudang!</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="kenapa-kita-butuh-mimir">Kenapa Kita Butuh Mimir?<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/metric-monitoring-dengan-mimir#kenapa-kita-butuh-mimir" class="hash-link" aria-label="Direct link to Kenapa Kita Butuh Mimir?" title="Direct link to Kenapa Kita Butuh Mimir?">​</a></h3>
+        <summary type="html"><![CDATA[Grafana Mimir Monitoring Banner]]></summary>
+        <content type="html"><![CDATA[<p><img decoding="async" loading="lazy" alt="Grafana Mimir Monitoring Banner" src="https://your-docusaurus-site.example.com/assets/images/mimir-monitoring-34fdf8e618a21e6610bfe4c52950a6cf.png" width="640" height="640" class="img_ev3q"></p>
+<p>Prometheus merupakan standar de facto untuk pengumpulan dan penyimpanan metrik dalam ekosistem cloud-native. Namun, seiring pertumbuhan infrastruktur, Prometheus menghadapi keterbatasan dalam hal kapasitas penyimpanan jangka panjang dan skalabilitas horizontal. <strong>Grafana Mimir</strong> hadir sebagai solusi <em>long-term metric storage</em> yang dirancang untuk mengatasi keterbatasan tersebut.</p>
+<p>Artikel ini membahas arsitektur, keunggulan, dan alasan mengapa Mimir merupakan komplemen yang ideal untuk deployment Prometheus berskala besar.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="apa-itu-grafana-mimir">Apa Itu Grafana Mimir?<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/metric-monitoring-dengan-mimir#apa-itu-grafana-mimir" class="hash-link" aria-label="Direct link to Apa Itu Grafana Mimir?" title="Direct link to Apa Itu Grafana Mimir?">​</a></h2>
+<p>Grafana Mimir adalah sistem penyimpanan metrik jangka panjang (<em>long-term storage</em>) yang dirancang khusus untuk skalabilitas tinggi dan ketersediaan tinggi (<em>high availability</em>). Jika Prometheus berperan sebagai pengumpul dan penyimpan metrik jangka pendek, Mimir berperan sebagai penyimpan metrik jangka panjang yang mampu menampung data dari ratusan hingga ribuan instance Prometheus.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="arsitektur-grafana-mimir">Arsitektur Grafana Mimir<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/metric-monitoring-dengan-mimir#arsitektur-grafana-mimir" class="hash-link" aria-label="Direct link to Arsitektur Grafana Mimir" title="Direct link to Arsitektur Grafana Mimir">​</a></h2>
+<!-- -->
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="mengapa-mimir-diperlukan">Mengapa Mimir Diperlukan?<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/metric-monitoring-dengan-mimir#mengapa-mimir-diperlukan" class="hash-link" aria-label="Direct link to Mengapa Mimir Diperlukan?" title="Direct link to Mengapa Mimir Diperlukan?">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="keterbatasan-prometheus">Keterbatasan Prometheus<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/metric-monitoring-dengan-mimir#keterbatasan-prometheus" class="hash-link" aria-label="Direct link to Keterbatasan Prometheus" title="Direct link to Keterbatasan Prometheus">​</a></h3>
+<table><thead><tr><th>Aspek</th><th>Prometheus</th><th>Grafana Mimir</th></tr></thead><tbody><tr><td><strong>Skalabilitas</strong></td><td>Vertikal (single node)</td><td>Horizontal (multi-node)</td></tr><tr><td><strong>Retensi Data</strong></td><td>Terbatas (minggu/bulan)</td><td>Tidak terbatas (tahun)</td></tr><tr><td><strong>High Availability</strong></td><td>Memerlukan konfigurasi tambahan</td><td>Bawaan (<em>built-in</em>)</td></tr><tr><td><strong>Multi-tenancy</strong></td><td>❌ Tidak didukung</td><td>✅ Didukung secara native</td></tr><tr><td><strong>Global View</strong></td><td>Terbatas pada satu instance</td><td>Agregasi dari seluruh instance</td></tr><tr><td><strong>Storage Backend</strong></td><td>Local disk</td><td>Object storage (S3/GCS/MinIO)</td></tr></tbody></table>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="keunggulan-utama-mimir">Keunggulan Utama Mimir<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/metric-monitoring-dengan-mimir#keunggulan-utama-mimir" class="hash-link" aria-label="Direct link to Keunggulan Utama Mimir" title="Direct link to Keunggulan Utama Mimir">​</a></h3>
 <ol>
-<li><strong>Skalabilitas Gila-gilaan:</strong> Bisa handle jutaan metrik tanpa keringat dingin.</li>
-<li><strong>High Availability:</strong> Data kalian aman karena Mimir didesain buat nggak gampang mati.</li>
-<li><strong>Multi-tenant:</strong> Kalian bisa pisahin data antar tim atau antar project dalam satu sistem yang sama.</li>
-<li><strong>Cepat:</strong> Query datanya kenceng banget meskipun datanya udah menumpuk berbulan-bulan.</li>
+<li>
+<p><strong>Skalabilitas Horizontal</strong> — Mampu menangani jutaan metrik aktif (<em>active series</em>) melalui arsitektur microservice yang dapat di-<em>scale</em> secara independen per komponen.</p>
+</li>
+<li>
+<p><strong>High Availability</strong> — Data direplikasi secara otomatis sehingga tidak ada <em>single point of failure</em>. Kegagalan pada satu node tidak akan menyebabkan kehilangan data.</p>
+</li>
+<li>
+<p><strong>Multi-tenancy</strong> — Mendukung pemisahan data antar tim, proyek, atau kluster dalam satu deployment Mimir. Setiap tenant memiliki isolasi data yang ketat.</p>
+</li>
+<li>
+<p><strong>Performa Query yang Tinggi</strong> — Meskipun data telah tersimpan dalam jangka waktu yang lama, query tetap dapat dieksekusi dengan cepat berkat mekanisme <em>query splitting</em>, <em>caching</em>, dan <em>parallel execution</em>.</p>
+</li>
 </ol>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="singkatnya">Singkatnya...<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/metric-monitoring-dengan-mimir#singkatnya" class="hash-link" aria-label="Direct link to Singkatnya..." title="Direct link to Singkatnya...">​</a></h3>
-<p>Kalau kalian baru mulai, Prometheus sudah cukup banget. Tapi pas infrastruktur kalian mulai tumbuh besar dan butuh rekaman data yang awet bertahun-tahun, Mimir adalah sahabat terbaik kalian.</p>
-<p>Monitoring jadi nggak ribet, aplikasi terpantau, dan hati pun tenang karena semua angka (metrik) tersimpan aman di singgasananya. 📊🔥</p>
-<p>Selamat memonitor, Folks!</p>]]></content>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="alur-data">Alur Data<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/metric-monitoring-dengan-mimir#alur-data" class="hash-link" aria-label="Direct link to Alur Data" title="Direct link to Alur Data">​</a></h2>
+<!-- -->
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="komponen-mimir">Komponen Mimir<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/metric-monitoring-dengan-mimir#komponen-mimir" class="hash-link" aria-label="Direct link to Komponen Mimir" title="Direct link to Komponen Mimir">​</a></h2>
+<!-- -->
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="kapan-mengadopsi-mimir">Kapan Mengadopsi Mimir?<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/metric-monitoring-dengan-mimir#kapan-mengadopsi-mimir" class="hash-link" aria-label="Direct link to Kapan Mengadopsi Mimir?" title="Direct link to Kapan Mengadopsi Mimir?">​</a></h2>
+<table><thead><tr><th>Kondisi</th><th>Rekomendasi</th></tr></thead><tbody><tr><td>Infrastruktur kecil, satu kluster</td><td>Prometheus sudah memadai</td></tr><tr><td>Butuh retensi data &gt; 3 bulan</td><td>✅ Pertimbangkan Mimir</td></tr><tr><td>Multi-cluster Kubernetes</td><td>✅ Sangat direkomendasikan</td></tr><tr><td>Kebutuhan multi-tenancy</td><td>✅ Wajib menggunakan Mimir</td></tr><tr><td>Metrik aktif &gt; 1 juta series</td><td>✅ Sangat direkomendasikan</td></tr></tbody></table>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="kesimpulan">Kesimpulan<a href="https://your-docusaurus-site.example.com/blog/2024/01/01/2024/metric-monitoring-dengan-mimir#kesimpulan" class="hash-link" aria-label="Direct link to Kesimpulan" title="Direct link to Kesimpulan">​</a></h2>
+<p>Grafana Mimir merupakan solusi yang tepat bagi organisasi yang membutuhkan penyimpanan metrik berskala besar dengan retensi jangka panjang. Dengan arsitektur microservice yang dapat di-<em>scale</em> secara horizontal, dukungan multi-tenancy, dan integrasi seamless dengan ekosistem Grafana, Mimir menjadi komplemen yang ideal untuk deployment Prometheus di lingkungan produksi.</p>
+<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>Rekomendasi</div><div class="admonitionContent_BuS1"><p>Untuk memulai, Grafana Mimir dapat dijalankan dalam mode <strong>monolithic</strong> yang lebih sederhana untuk infrastruktur kecil, kemudian dimigrasikan ke mode <strong>microservice</strong> seiring dengan pertumbuhan kebutuhan.</p></div></div>]]></content>
+        <author>
+            <name>Mamat Nurahmat</name>
+            <uri>https://github.com/mamatnurahmat</uri>
+        </author>
+        <category label="Monitoring" term="Monitoring"/>
+        <category label="DevOps" term="DevOps"/>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Mengenal GitOps: Deploy Aplikasi Jadi Lebih Santai dengan ArgoCD]]></title>
+        <title type="html"><![CDATA[Mengenal GitOps: Otomatisasi Deployment Aplikasi dengan ArgoCD]]></title>
         <id>https://your-docusaurus-site.example.com/blog/2023/01/01/2023/mengenal-gitops-dengan-argocd</id>
         <link href="https://your-docusaurus-site.example.com/blog/2023/01/01/2023/mengenal-gitops-dengan-argocd"/>
         <updated>2023-01-01T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[Halo teman-teman! Pernah nggak sih kalian ngerasa deg-degan pas mau deploy kode ke server? Takut ada yang salah, takut servicenya mati, atau takut settingannya nggak sama antara lokal dan server?]]></summary>
-        <content type="html"><![CDATA[<p>Halo teman-teman! Pernah nggak sih kalian ngerasa deg-degan pas mau deploy kode ke server? Takut ada yang salah, takut servicenya mati, atau takut settingannya nggak sama antara lokal dan server?</p>
-<p>Nah, di sinilah <strong>GitOps</strong> datang sebagai pahlawan!</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="apa-itu-gitops">Apa itu GitOps?<a href="https://your-docusaurus-site.example.com/blog/2023/01/01/2023/mengenal-gitops-dengan-argocd#apa-itu-gitops" class="hash-link" aria-label="Direct link to Apa itu GitOps?" title="Direct link to Apa itu GitOps?">​</a></h3>
-<p>Bayangkan kalau Git (rumah kode kalian) jadi satu-satunya sumber kebenaran (<em>Single Source of Truth</em>). Jadi, apa pun yang ada di Git, itulah yang harus ada di server. Nggak ada lagi tuh ceritanya "eh tadi di server aku ubah manual dikit". Kalau mau ubah, ya ubah di Git!</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="kenalin-argocd">Kenalin, ArgoCD!<a href="https://your-docusaurus-site.example.com/blog/2023/01/01/2023/mengenal-gitops-dengan-argocd#kenalin-argocd" class="hash-link" aria-label="Direct link to Kenalin, ArgoCD!" title="Direct link to Kenalin, ArgoCD!">​</a></h3>
-<p>ArgoCD adalah alat yang berdiri di tengah-tengah antara Git dan Kubernetes kalian. Tugasnya simpel tapi keren banget:</p>
+        <summary type="html"><![CDATA[GitOps ArgoCD Banner]]></summary>
+        <content type="html"><![CDATA[<p><img decoding="async" loading="lazy" alt="GitOps ArgoCD Banner" src="https://your-docusaurus-site.example.com/assets/images/gitops-argocd-744f198aac6442ca1d2c6a96bdb5fcde.png" width="640" height="640" class="img_ev3q"></p>
+<p>Proses deployment aplikasi ke lingkungan produksi seringkali menjadi tahapan yang penuh risiko. Tanpa mekanisme kontrol yang baik, perbedaan konfigurasi antara lingkungan pengembangan dan produksi dapat menimbulkan masalah yang sulit ditelusuri. <strong>GitOps</strong> hadir sebagai metodologi yang menjadikan Git sebagai satu-satunya sumber kebenaran (<em>Single Source of Truth</em>) untuk seluruh konfigurasi infrastruktur dan aplikasi.</p>
+<p>Artikel ini membahas konsep GitOps dan implementasinya menggunakan <strong>ArgoCD</strong> pada kluster Kubernetes.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="apa-itu-gitops">Apa Itu GitOps?<a href="https://your-docusaurus-site.example.com/blog/2023/01/01/2023/mengenal-gitops-dengan-argocd#apa-itu-gitops" class="hash-link" aria-label="Direct link to Apa Itu GitOps?" title="Direct link to Apa Itu GitOps?">​</a></h2>
+<p>GitOps adalah paradigma operasional yang menetapkan repositori Git sebagai sumber otoritatif untuk definisi infrastruktur dan konfigurasi aplikasi. Dengan pendekatan ini, seluruh perubahan pada infrastruktur harus dilakukan melalui mekanisme Git (<em>commit</em>, <em>pull request</em>, <em>merge</em>), bukan melalui intervensi manual pada server.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="prinsip-prinsip-gitops">Prinsip-prinsip GitOps<a href="https://your-docusaurus-site.example.com/blog/2023/01/01/2023/mengenal-gitops-dengan-argocd#prinsip-prinsip-gitops" class="hash-link" aria-label="Direct link to Prinsip-prinsip GitOps" title="Direct link to Prinsip-prinsip GitOps">​</a></h3>
+<!-- -->
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="argocd-gitops-controller-untuk-kubernetes">ArgoCD: GitOps Controller untuk Kubernetes<a href="https://your-docusaurus-site.example.com/blog/2023/01/01/2023/mengenal-gitops-dengan-argocd#argocd-gitops-controller-untuk-kubernetes" class="hash-link" aria-label="Direct link to ArgoCD: GitOps Controller untuk Kubernetes" title="Direct link to ArgoCD: GitOps Controller untuk Kubernetes">​</a></h2>
+<p>ArgoCD adalah <em>GitOps Continuous Delivery tool</em> yang secara aktif memonitor repositori Git dan memastikan kondisi kluster Kubernetes selalu selaras dengan definisi yang tersimpan di repositori.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="alur-kerja-argocd">Alur Kerja ArgoCD<a href="https://your-docusaurus-site.example.com/blog/2023/01/01/2023/mengenal-gitops-dengan-argocd#alur-kerja-argocd" class="hash-link" aria-label="Direct link to Alur Kerja ArgoCD" title="Direct link to Alur Kerja ArgoCD">​</a></h3>
+<!-- -->
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="mekanisme-kerja-argocd">Mekanisme Kerja ArgoCD<a href="https://your-docusaurus-site.example.com/blog/2023/01/01/2023/mengenal-gitops-dengan-argocd#mekanisme-kerja-argocd" class="hash-link" aria-label="Direct link to Mekanisme Kerja ArgoCD" title="Direct link to Mekanisme Kerja ArgoCD">​</a></h3>
 <ol>
-<li>Dia bakal terus-terusan ngintip ke Git.</li>
-<li>Kalau ada perubahan di Git, dia langsung "teriak" dan nyamain kondisi di Kubernetes.</li>
-<li>Kalau ada orang iseng yang ubah-ubah manual di Kubernetes, ArgoCD bakal balikin lagi ke kondisi yang sesuai di Git.</li>
+<li>
+<p><strong>Monitoring Kontinyu</strong> — ArgoCD secara berkala memonitor repositori Git untuk mendeteksi setiap perubahan pada manifest Kubernetes.</p>
+</li>
+<li>
+<p><strong>Sinkronisasi Otomatis</strong> — Apabila terdeteksi perbedaan antara kondisi yang didefinisikan di Git dengan kondisi aktual di kluster, ArgoCD secara otomatis melakukan sinkronisasi.</p>
+</li>
+<li>
+<p><strong>Self-healing</strong> — Jika terjadi perubahan manual pada kluster (<em>configuration drift</em>), ArgoCD akan mengembalikan kondisi kluster sesuai dengan definisi di Git.</p>
+</li>
 </ol>
-<p><strong>Kenapa harus ArgoCD?</strong></p>
-<ul>
-<li><strong>Otomatis:</strong> Tinggal <code>git push</code>, ArgoCD yang urus sisanya.</li>
-<li><strong>Gampang Rollback:</strong> Salah deploy? Tinggal revert di Git, server langsung balik ke versi sebelumnya.</li>
-<li><strong>Transparan:</strong> Semua orang tahu siapa yang ubah apa lewat history Git.</li>
-</ul>
-<p>Jadi, mulai sekarang ayo kurangi manuver manual di server dan biarkan ArgoCD yang jagain aplikasi kalian. Hidup jadi lebih tenang, tidur pun jadi lebih nyenyak! 🚀</p>]]></content>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="siklus-reconciliation">Siklus Reconciliation<a href="https://your-docusaurus-site.example.com/blog/2023/01/01/2023/mengenal-gitops-dengan-argocd#siklus-reconciliation" class="hash-link" aria-label="Direct link to Siklus Reconciliation" title="Direct link to Siklus Reconciliation">​</a></h2>
+<!-- -->
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="keunggulan-argocd">Keunggulan ArgoCD<a href="https://your-docusaurus-site.example.com/blog/2023/01/01/2023/mengenal-gitops-dengan-argocd#keunggulan-argocd" class="hash-link" aria-label="Direct link to Keunggulan ArgoCD" title="Direct link to Keunggulan ArgoCD">​</a></h2>
+<table><thead><tr><th>Aspek</th><th>Deployment Tradisional</th><th>GitOps dengan ArgoCD</th></tr></thead><tbody><tr><td><strong>Sumber Kebenaran</strong></td><td>Server / manual</td><td>Git repository</td></tr><tr><td><strong>Audit Trail</strong></td><td>Terbatas</td><td>Lengkap (Git history)</td></tr><tr><td><strong>Rollback</strong></td><td>Manual &amp; berisiko</td><td><code>git revert</code> — otomatis &amp; aman</td></tr><tr><td><strong>Transparansi</strong></td><td>Rendah</td><td>Tinggi (siapa mengubah apa, kapan)</td></tr><tr><td><strong>Self-healing</strong></td><td>❌</td><td>✅ Otomatis</td></tr><tr><td><strong>Multi-cluster</strong></td><td>Kompleks</td><td>Didukung secara native</td></tr></tbody></table>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="keunggulan-utama">Keunggulan Utama<a href="https://your-docusaurus-site.example.com/blog/2023/01/01/2023/mengenal-gitops-dengan-argocd#keunggulan-utama" class="hash-link" aria-label="Direct link to Keunggulan Utama" title="Direct link to Keunggulan Utama">​</a></h2>
+<ol>
+<li>
+<p><strong>Otomatisasi Penuh</strong> — Cukup melakukan <code>git push</code>, dan ArgoCD akan menangani seluruh proses deployment ke kluster Kubernetes.</p>
+</li>
+<li>
+<p><strong>Rollback yang Aman</strong> — Jika terjadi kesalahan pada deployment, cukup lakukan <em>revert commit</em> di Git, dan kluster akan secara otomatis kembali ke versi sebelumnya.</p>
+</li>
+<li>
+<p><strong>Transparansi dan Akuntabilitas</strong> — Seluruh perubahan tercatat di Git history, sehingga memudahkan proses audit dan <em>troubleshooting</em>.</p>
+</li>
+<li>
+<p><strong>Eliminasi Configuration Drift</strong> — ArgoCD memastikan tidak ada perbedaan antara konfigurasi yang didefinisikan dan yang berjalan di kluster.</p>
+</li>
+</ol>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="kesimpulan">Kesimpulan<a href="https://your-docusaurus-site.example.com/blog/2023/01/01/2023/mengenal-gitops-dengan-argocd#kesimpulan" class="hash-link" aria-label="Direct link to Kesimpulan" title="Direct link to Kesimpulan">​</a></h2>
+<p>Adopsi GitOps dengan ArgoCD merupakan langkah strategis dalam memodernisasi proses deployment dan pengelolaan infrastruktur Kubernetes. Dengan menjadikan Git sebagai satu-satunya sumber kebenaran, tim dapat meningkatkan keandalan, keamanan, dan efisiensi operasional secara signifikan.</p>
+<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>Langkah Selanjutnya</div><div class="admonitionContent_BuS1"><p>Untuk memulai implementasi ArgoCD, silakan merujuk ke <a href="https://argo-cd.readthedocs.io/" target="_blank" rel="noopener noreferrer">dokumentasi resmi ArgoCD</a> dan pertimbangkan untuk mengintegrasikannya dengan <strong>Sealed Secrets</strong> untuk pengelolaan <em>secrets</em> yang aman.</p></div></div>]]></content>
+        <author>
+            <name>Mamat Nurahmat</name>
+            <uri>https://github.com/mamatnurahmat</uri>
+        </author>
+        <category label="GitOps" term="GitOps"/>
+        <category label="Kubernetes" term="Kubernetes"/>
+        <category label="DevOps" term="DevOps"/>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Nginx Proxy Manager Lebih Aman dengan CrowdSec: Bye-bye Hacker!]]></title>
+        <title type="html"><![CDATA[Meningkatkan Keamanan Nginx Proxy Manager dengan Integrasi CrowdSec]]></title>
         <id>https://your-docusaurus-site.example.com/blog/2022/09/01/2022/integrasi-nginx-proxy-manager-dan-crowdsec</id>
         <link href="https://your-docusaurus-site.example.com/blog/2022/09/01/2022/integrasi-nginx-proxy-manager-dan-crowdsec"/>
         <updated>2022-09-01T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[Halo teman-teman pengabdi self-hosting! Buat kalian yang mengelola banyak layanan di rumah atau di VPS, pasti nggak asing lagi sama Nginx Proxy Manager (NPM). Tinggal klik-klik di dashboard, SSL aktif, proxy beres. Tapi, apakah itu cukup aman?]]></summary>
-        <content type="html"><![CDATA[<p>Halo teman-teman pengabdi <em>self-hosting</em>! Buat kalian yang mengelola banyak layanan di rumah atau di VPS, pasti nggak asing lagi sama <strong>Nginx Proxy Manager (NPM)</strong>. Tinggal klik-klik di dashboard, SSL aktif, proxy beres. Tapi, apakah itu cukup aman?</p>
-<p>Hari ini kita bakal bahas cara bikin Nginx Proxy Manager kalian jadi "kebal" serangan dengan bantuan <strong>CrowdSec</strong>.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="apa-itu-nginx-proxy-manager-npm">Apa itu Nginx Proxy Manager (NPM)?<a href="https://your-docusaurus-site.example.com/blog/2022/09/01/2022/integrasi-nginx-proxy-manager-dan-crowdsec#apa-itu-nginx-proxy-manager-npm" class="hash-link" aria-label="Direct link to Apa itu Nginx Proxy Manager (NPM)?" title="Direct link to Apa itu Nginx Proxy Manager (NPM)?">​</a></h3>
-<p>Singkatnya, NPM adalah wajah ganteng dari Nginx. Dia memberikan kita antarmuka web (GUI) untuk mengatur <em>reverse proxy</em> tanpa perlu pusing ngedit file <code>.conf</code> secara manual. Sangat praktis, tapi secara default dia nggak punya sistem pertahanan aktif yang kuat terhadap serangan brute force atau bot jahat.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="kenalin-crowdsec-sang-penjaga-malam">Kenalin, CrowdSec sang Penjaga Malam<a href="https://your-docusaurus-site.example.com/blog/2022/09/01/2022/integrasi-nginx-proxy-manager-dan-crowdsec#kenalin-crowdsec-sang-penjaga-malam" class="hash-link" aria-label="Direct link to Kenalin, CrowdSec sang Penjaga Malam" title="Direct link to Kenalin, CrowdSec sang Penjaga Malam">​</a></h3>
-<p>CrowdSec adalah sistem keamanan modern yang membaca log aplikasi kalian dan mendeteksi perilaku aneh. Kalau ada IP yang mencoba login berkali-kali ke dashboard kalian tapi gagal terus, CrowdSec bakal bilang: <em>"Eits, nggak bisa! Kamu saya blokir!"</em>.</p>
-<p>Kehebatan CrowdSec adalah dia berbagi daftar penjahat ini ke seluruh penggunanya. Jadi kalau si penyerang sudah diblokir di server orang lain, dia bakal otomatis diblokir juga di server kalian sebelum sempat mencoba menyerang.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="cara-integrasinya">Cara Integrasinya<a href="https://your-docusaurus-site.example.com/blog/2022/09/01/2022/integrasi-nginx-proxy-manager-dan-crowdsec#cara-integrasinya" class="hash-link" aria-label="Direct link to Cara Integrasinya" title="Direct link to Cara Integrasinya">​</a></h3>
-<p>Ada beberapa cara, tapi yang paling populer dan rapi adalah menggunakan <strong>CrowdSec Bouncer</strong> yang masuk ke dalam alur kerja Nginx Proxy Manager.</p>
-<p>Secara teknis, NPM menggunakan <strong>OpenResty</strong> (Nginx + Lua). Kita bisa menyisipkan "Bouncer" berbasis Lua di dalam NPM:</p>
-<ol>
-<li><strong>Parsing Log:</strong> CrowdSec akan membaca log akses dari NPM.</li>
-<li><strong>Keputusan (Decisions):</strong> Jika CrowdSec menemukan IP jahat, dia akan menyimpannya di database lokal (LAPI).</li>
-<li><strong>Bouncer:</strong> Setiap ada tamu yang datang ke NPM, si Bouncer bakal cek dulu ke CrowdSec: <em>"IP ini boleh lewat nggak?"</em>. Kalau CrowdSec bilang blokir, si tamu bakal langsung dikasih halaman "403 Forbidden" atau halaman Captcha.</li>
-</ol>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="kenapa-ini-penting">Kenapa Ini Penting?<a href="https://your-docusaurus-site.example.com/blog/2022/09/01/2022/integrasi-nginx-proxy-manager-dan-crowdsec#kenapa-ini-penting" class="hash-link" aria-label="Direct link to Kenapa Ini Penting?" title="Direct link to Kenapa Ini Penting?">​</a></h3>
+        <summary type="html"><![CDATA[Nginx Proxy Manager CrowdSec Banner]]></summary>
+        <content type="html"><![CDATA[<p><img decoding="async" loading="lazy" alt="Nginx Proxy Manager CrowdSec Banner" src="https://your-docusaurus-site.example.com/assets/images/npm-crowdsec-d4c214fafa83e37004acfcebed22dfe2.png" width="640" height="640" class="img_ev3q"></p>
+<p>Bagi pengelola infrastruktur <em>self-hosting</em>, <strong>Nginx Proxy Manager (NPM)</strong> merupakan solusi yang sangat populer untuk mengatur <em>reverse proxy</em> melalui antarmuka grafis yang intuitif. Namun, kemudahan penggunaan tersebut perlu diimbangi dengan mekanisme keamanan yang memadai. Artikel ini membahas cara mengintegrasikan <strong>CrowdSec</strong> dengan Nginx Proxy Manager untuk membangun sistem pertahanan aktif terhadap ancaman siber.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="apa-itu-nginx-proxy-manager">Apa Itu Nginx Proxy Manager?<a href="https://your-docusaurus-site.example.com/blog/2022/09/01/2022/integrasi-nginx-proxy-manager-dan-crowdsec#apa-itu-nginx-proxy-manager" class="hash-link" aria-label="Direct link to Apa Itu Nginx Proxy Manager?" title="Direct link to Apa Itu Nginx Proxy Manager?">​</a></h2>
+<p>Nginx Proxy Manager (NPM) adalah antarmuka grafis (<em>GUI</em>) untuk Nginx yang memungkinkan konfigurasi <em>reverse proxy</em>, SSL certificate, dan <em>access list</em> tanpa perlu mengedit file konfigurasi Nginx secara manual. Meskipun sangat praktis, NPM secara bawaan tidak memiliki sistem pertahanan aktif yang kuat terhadap serangan <em>brute force</em>, <em>bot attack</em>, atau ancaman keamanan lainnya.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="crowdsec-sebagai-sistem-pertahanan-aktif">CrowdSec sebagai Sistem Pertahanan Aktif<a href="https://your-docusaurus-site.example.com/blog/2022/09/01/2022/integrasi-nginx-proxy-manager-dan-crowdsec#crowdsec-sebagai-sistem-pertahanan-aktif" class="hash-link" aria-label="Direct link to CrowdSec sebagai Sistem Pertahanan Aktif" title="Direct link to CrowdSec sebagai Sistem Pertahanan Aktif">​</a></h2>
+<p>CrowdSec merupakan sistem keamanan kolaboratif modern yang menganalisis log aplikasi dan mendeteksi perilaku anomali secara real-time. Mekanisme kerjanya meliputi:</p>
 <ul>
-<li><strong>Melindungi Layanan di Belakangnya:</strong> Bukan cuma NPM yang aman, tapi aplikasi yang kalian proxy-kan (seperti Home Assistant, Portainer, atau Blog ini) juga ikut terlindungi.</li>
-<li><strong>Ringan:</strong> Berbeda dengan WAF tradisional yang berat, CrowdSec sangat hemat resource.</li>
-<li><strong>Otomatis:</strong> Sekali setup, kalian tinggal duduk manis. CrowdSec akan terus mengupdate daftar IP jahat secara real-time.</li>
+<li><strong>Deteksi Anomali</strong> — Mengidentifikasi pola serangan seperti percobaan login berulang yang gagal</li>
+<li><strong>Keputusan Otomatis</strong> — Secara otomatis memblokir IP yang teridentifikasi sebagai ancaman</li>
+<li><strong>Berbagi Intelijen</strong> — Membagikan informasi ancaman ke seluruh komunitas pengguna CrowdSec</li>
 </ul>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="kesimpulan">Kesimpulan<a href="https://your-docusaurus-site.example.com/blog/2022/09/01/2022/integrasi-nginx-proxy-manager-dan-crowdsec#kesimpulan" class="hash-link" aria-label="Direct link to Kesimpulan" title="Direct link to Kesimpulan">​</a></h3>
-<p>Nginx Proxy Manager bikin hidup kita mudah dalam urusan koneksi, dan CrowdSec bikin hidup kita tenang dalam urusan keamanan. Kombinasi ini adalah paket wajib buat kalian yang mau serius di dunia <em>self-hosting</em>.</p>
-<p>Jadi, sudahkah kalian memasang satpam digital untuk NPM kalian hari ini? 🛡️🌐</p>
-<p><em>Happy hosting and stay secure!</em></p>]]></content>
+<!-- -->
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="mekanisme-integrasi">Mekanisme Integrasi<a href="https://your-docusaurus-site.example.com/blog/2022/09/01/2022/integrasi-nginx-proxy-manager-dan-crowdsec#mekanisme-integrasi" class="hash-link" aria-label="Direct link to Mekanisme Integrasi" title="Direct link to Mekanisme Integrasi">​</a></h2>
+<p>Nginx Proxy Manager dibangun di atas <strong>OpenResty</strong> (Nginx + Lua), sehingga integrasi dengan CrowdSec dapat dilakukan melalui <strong>CrowdSec Lua Bouncer</strong>. Berikut alur kerjanya:</p>
+<!-- -->
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="langkah-langkah-integrasi">Langkah-langkah Integrasi<a href="https://your-docusaurus-site.example.com/blog/2022/09/01/2022/integrasi-nginx-proxy-manager-dan-crowdsec#langkah-langkah-integrasi" class="hash-link" aria-label="Direct link to Langkah-langkah Integrasi" title="Direct link to Langkah-langkah Integrasi">​</a></h3>
+<ol>
+<li>
+<p><strong>Parsing Log</strong> — CrowdSec Agent membaca log akses dari Nginx Proxy Manager untuk mendeteksi perilaku anomali.</p>
+</li>
+<li>
+<p><strong>Pembuatan Keputusan (<em>Decisions</em>)</strong> — Apabila CrowdSec menemukan IP mencurigakan, keputusan pemblokiran disimpan di basis data lokal melalui LAPI.</p>
+</li>
+<li>
+<p><strong>Eksekusi oleh Bouncer</strong> — Setiap request yang masuk ke NPM akan diverifikasi oleh Lua Bouncer. Bouncer melakukan query ke LAPI untuk menentukan apakah IP tersebut diizinkan atau harus diblokir.</p>
+</li>
+</ol>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="cakupan-perlindungan">Cakupan Perlindungan<a href="https://your-docusaurus-site.example.com/blog/2022/09/01/2022/integrasi-nginx-proxy-manager-dan-crowdsec#cakupan-perlindungan" class="hash-link" aria-label="Direct link to Cakupan Perlindungan" title="Direct link to Cakupan Perlindungan">​</a></h2>
+<table><thead><tr><th>Aspek</th><th>Tanpa CrowdSec</th><th>Dengan CrowdSec</th></tr></thead><tbody><tr><td><strong>Manajemen Reverse Proxy</strong></td><td>✅</td><td>✅</td></tr><tr><td><strong>SSL/TLS Otomatis</strong></td><td>✅</td><td>✅</td></tr><tr><td><strong>Deteksi Brute Force</strong></td><td>❌</td><td>✅</td></tr><tr><td><strong>Pemblokiran IP Otomatis</strong></td><td>❌</td><td>✅</td></tr><tr><td><strong>Threat Intelligence</strong></td><td>❌</td><td>✅</td></tr><tr><td><strong>Perlindungan Layanan Backend</strong></td><td>❌</td><td>✅</td></tr></tbody></table>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="keunggulan-integrasi">Keunggulan Integrasi<a href="https://your-docusaurus-site.example.com/blog/2022/09/01/2022/integrasi-nginx-proxy-manager-dan-crowdsec#keunggulan-integrasi" class="hash-link" aria-label="Direct link to Keunggulan Integrasi" title="Direct link to Keunggulan Integrasi">​</a></h2>
+<ol>
+<li>
+<p><strong>Perlindungan Menyeluruh</strong> — Bukan hanya NPM yang terlindungi, tetapi seluruh layanan yang berada di belakangnya (seperti Home Assistant, Portainer, atau aplikasi web lainnya) juga ikut terlindungi secara otomatis.</p>
+</li>
+<li>
+<p><strong>Efisiensi Resource</strong> — Berbeda dengan WAF tradisional yang membutuhkan resource besar, CrowdSec dirancang untuk beroperasi dengan konsumsi resource yang minimal.</p>
+</li>
+<li>
+<p><strong>Operasi Otomatis</strong> — Setelah konfigurasi awal selesai, CrowdSec akan secara kontinyu memperbarui daftar IP berbahaya secara real-time tanpa intervensi manual.</p>
+</li>
+</ol>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="kesimpulan">Kesimpulan<a href="https://your-docusaurus-site.example.com/blog/2022/09/01/2022/integrasi-nginx-proxy-manager-dan-crowdsec#kesimpulan" class="hash-link" aria-label="Direct link to Kesimpulan" title="Direct link to Kesimpulan">​</a></h2>
+<p>Integrasi antara Nginx Proxy Manager dan CrowdSec menghasilkan kombinasi yang optimal: kemudahan pengelolaan <em>reverse proxy</em> melalui antarmuka grafis yang intuitif, ditambah dengan lapisan keamanan aktif yang didukung oleh intelijen ancaman kolaboratif. Kombinasi ini sangat direkomendasikan bagi siapa pun yang mengelola infrastruktur <em>self-hosting</em> dan mengutamakan keamanan.</p>
+<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>Rekomendasi</div><div class="admonitionContent_BuS1"><p>Setelah integrasi selesai, pantau statistik CrowdSec secara berkala menggunakan perintah <code>cscli decisions list</code> dan <code>cscli metrics</code> untuk memastikan sistem berjalan dengan optimal.</p></div></div>]]></content>
+        <author>
+            <name>Mamat Nurahmat</name>
+            <uri>https://github.com/mamatnurahmat</uri>
+        </author>
+        <category label="Security" term="Security"/>
+        <category label="CrowdSec" term="CrowdSec"/>
+        <category label="Nginx" term="Nginx"/>
+        <category label="DevOps" term="DevOps"/>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Double Protection: Kombinasi Maut CrowdSec dan HAProxy WAF (ModSecurity)]]></title>
+        <title type="html"><![CDATA[Pertahanan Berlapis: Integrasi CrowdSec dan HAProxy WAF dengan ModSecurity]]></title>
         <id>https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf</id>
         <link href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf"/>
         <updated>2022-05-01T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[Halo teman-teman! Setelah sebelumnya kita membahas cara membangun WAF dengan HAProxy dan ModSecurity, sekarang saatnya kita menaikkan level keamanan kita ke tingkat yang lebih tinggi (dan lebih pintar!).]]></summary>
-        <content type="html"><![CDATA[<p>Halo teman-teman! Setelah sebelumnya kita membahas cara membangun WAF dengan HAProxy dan ModSecurity, sekarang saatnya kita menaikkan level keamanan kita ke tingkat yang lebih tinggi (dan lebih pintar!).</p>
-<p>Pernah terpikir nggak, gimana kalau kita bisa memblokir serangan bahkan sebelum si penyerang mencoba mengetuk pintu aplikasi kita? Nah, itulah gunanya <strong>CrowdSec</strong>!</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="kenapa-kita-butuh-crowdsec">Kenapa Kita Butuh CrowdSec?<a href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf#kenapa-kita-butuh-crowdsec" class="hash-link" aria-label="Direct link to Kenapa Kita Butuh CrowdSec?" title="Direct link to Kenapa Kita Butuh CrowdSec?">​</a></h3>
-<p>Jika ModSecurity adalah "satpam" yang memeriksa setiap barang bawaan tamu (Deep Packet Inspection), maka CrowdSec adalah "intelijen keamanan" yang tahu daftar pelaku kejahatan dari seluruh dunia.</p>
-<p>CrowdSec bekerja dengan cara menganalisis log dan mendeteksi perilaku mencurigakan (seperti brute force, port scanning, atau serangan DDoS). Kerennya lagi, jika satu pengguna CrowdSec mendeteksi serangan dari IP tertentu, IP tersebut akan dibagikan ke seluruh komunitas CrowdSec lainnya. <em>Community-powered security!</em></p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="arsitektur-pertahanan-berlapis-layered-security">Arsitektur Pertahanan Berlapis (Layered Security)<a href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf#arsitektur-pertahanan-berlapis-layered-security" class="hash-link" aria-label="Direct link to Arsitektur Pertahanan Berlapis (Layered Security)" title="Direct link to Arsitektur Pertahanan Berlapis (Layered Security)">​</a></h3>
-<p>Dengan menggabungkan keduanya di HAProxy, kita punya alur pertahanan seperti ini:</p>
-<ol>
-<li><strong>Layer 1 (CrowdSec):</strong> Memeriksa apakah IP pengirim ada dalam daftar hitam (blocklist) atau menunjukkan perilaku mencurigakan berdasarkan log. Jika ya, langsung blokir!</li>
-<li><strong>Layer 2 (ModSecurity WAF):</strong> Jika IP tersebut "bersih" di mata CrowdSec, maka isi permintaannya (payload) akan diperiksa oleh ModSecurity untuk memastikan tidak ada SQL Injection, XSS, dsb.</li>
-</ol>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="cara-kerjanya-di-haproxy">Cara Kerjanya di HAProxy<a href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf#cara-kerjanya-di-haproxy" class="hash-link" aria-label="Direct link to Cara Kerjanya di HAProxy" title="Direct link to Cara Kerjanya di HAProxy">​</a></h3>
-<p>Untuk mengintegrasikannya, kita biasanya menggunakan <strong>CrowdSec LAPI</strong> dan sebuah bouncer khusus untuk HAProxy.</p>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="1-pasang-crowdsec-agen">1. Pasang CrowdSec Agen<a href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf#1-pasang-crowdsec-agen" class="hash-link" aria-label="Direct link to 1. Pasang CrowdSec Agen" title="Direct link to 1. Pasang CrowdSec Agen">​</a></h4>
-<p>CrowdSec akan membaca log HAProxy (<code>/var/log/haproxy.log</code>) dan mendeteksi anomali.</p>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="2-gunakan-haproxy-bouncer">2. Gunakan HAProxy Bouncer<a href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf#2-gunakan-haproxy-bouncer" class="hash-link" aria-label="Direct link to 2. Gunakan HAProxy Bouncer" title="Direct link to 2. Gunakan HAProxy Bouncer">​</a></h4>
-<p>Bouncer ini bekerja di level HAProxy untuk menarik daftar IP yang harus diblokir dari CrowdSec lokal.</p>
-<p>Di konfigurasi HAProxy, kita bisa menambahkan ACL untuk mengecek apakah IP pengunjung harus di-<em>drop</em>:</p>
-<div class="language-haproxy codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-haproxy codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">frontend https-in</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    # Cek daftar blacklist dari CrowdSec (via stick-table atau ACL file)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    acl is_blacklisted src -f /etc/haproxy/crowdsec_blacklist.lst</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    http-request deny if is_blacklisted</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    # Jika lolos, kirim ke ModSecurity SPOA</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    filter spoe engine modsecurity config /etc/haproxy/modsec.conf</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    http-request deny if { var(txn.modsec.code) -m int gt 0 }</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    default_backend web-servers</span><br></span></code></pre></div></div>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="keuntungan-utama">Keuntungan Utama<a href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf#keuntungan-utama" class="hash-link" aria-label="Direct link to Keuntungan Utama" title="Direct link to Keuntungan Utama">​</a></h3>
+        <summary type="html"><![CDATA[CrowdSec HAProxy WAF Banner]]></summary>
+        <content type="html"><![CDATA[<p><img decoding="async" loading="lazy" alt="CrowdSec HAProxy WAF Banner" src="https://your-docusaurus-site.example.com/assets/images/crowdsec-haproxy-waf-af79ebdde0418ce28ebb2f894162c4f1.png" width="640" height="640" class="img_ev3q"></p>
+<p>Setelah sebelumnya membahas implementasi WAF menggunakan HAProxy dan ModSecurity, artikel ini mengulas strategi peningkatan keamanan ke level yang lebih tinggi melalui penerapan <strong>pertahanan berlapis (<em>Defense in Depth</em>)</strong>. Dengan mengintegrasikan <strong>CrowdSec</strong> ke dalam arsitektur yang telah ada, sistem mampu memblokir serangan bahkan sebelum penyerang sempat mengirimkan payload berbahaya.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="mengapa-crowdsec-diperlukan">Mengapa CrowdSec Diperlukan?<a href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf#mengapa-crowdsec-diperlukan" class="hash-link" aria-label="Direct link to Mengapa CrowdSec Diperlukan?" title="Direct link to Mengapa CrowdSec Diperlukan?">​</a></h2>
+<p>Jika ModSecurity berfungsi sebagai mekanisme inspeksi konten (<em>Deep Packet Inspection</em>), maka CrowdSec berperan sebagai sistem intelijen ancaman (<em>Threat Intelligence</em>) yang memiliki basis data reputasi IP dari seluruh dunia.</p>
+<p>CrowdSec menganalisis log dan mendeteksi perilaku mencurigakan seperti:</p>
 <ul>
-<li><strong>Hemat Resource:</strong> Serangan dari IP jahat yang sudah terbit di list CrowdSec akan langsung diblokir tanpa perlu diproses oleh ModSecurity SPOA yang lebih berat.</li>
-<li><strong>Update Real-time:</strong> Database IP jahat terus diperbarui oleh ribuan pengguna CrowdSec lainnya secara otomatis.</li>
-<li><strong>Visibilitas:</strong> Kamu bisa melihat siapa saja yang mencoba menyerangmu melalui dashboard <code>cscli</code> yang sangat user-friendly.</li>
+<li><strong>Brute force attack</strong> — percobaan login berulang yang gagal</li>
+<li><strong>Port scanning</strong> — pemindaian port untuk mencari celah keamanan</li>
+<li><strong>DDoS</strong> — serangan distribusi yang bertujuan melumpuhkan layanan</li>
 </ul>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="kesimpulan">Kesimpulan<a href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf#kesimpulan" class="hash-link" aria-label="Direct link to Kesimpulan" title="Direct link to Kesimpulan">​</a></h3>
-<p>Menggabungkan <strong>ModSecurity</strong> (untuk inspeksi konten) dan <strong>CrowdSec</strong> (untuk reputasi IP) di atas <strong>HAProxy</strong> adalah strategi "Defense in Depth" yang sangat solid. Servermu jadi lebih aman, beban kerja CPU lebih efisien, dan kamu pun bisa tidur lebih tenang.</p>
-<p>Gimana? Tertarik mencoba ramuan keamanan ini? 🛡️🚀</p>
-<p><em>Stay safe and keep hacking (the good way)!</em></p>]]></content>
+<div class="theme-admonition theme-admonition-info admonition_xJq3 alert alert--info"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 14 16"><path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg></span>Keunggulan Komunitas</div><div class="admonitionContent_BuS1"><p>Apabila seorang pengguna CrowdSec mendeteksi serangan dari suatu IP, informasi tersebut akan dibagikan ke seluruh komunitas CrowdSec secara otomatis. Mekanisme ini dikenal sebagai <em><strong>Community-Powered Security</strong></em>.</p></div></div>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="arsitektur-pertahanan-berlapis">Arsitektur Pertahanan Berlapis<a href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf#arsitektur-pertahanan-berlapis" class="hash-link" aria-label="Direct link to Arsitektur Pertahanan Berlapis" title="Direct link to Arsitektur Pertahanan Berlapis">​</a></h2>
+<!-- -->
+<p>Dengan arsitektur ini, proses validasi request berjalan secara bertahap:</p>
+<ol>
+<li><strong>Layer 1 — CrowdSec</strong>: Memeriksa apakah IP pengirim terdaftar dalam <em>blocklist</em> atau menunjukkan pola perilaku mencurigakan berdasarkan analisis log. Jika teridentifikasi, request langsung ditolak.</li>
+<li><strong>Layer 2 — ModSecurity WAF</strong>: Jika IP dinyatakan bersih oleh CrowdSec, konten request (<em>payload</em>) akan diinspeksi oleh ModSecurity untuk mendeteksi SQL Injection, XSS, dan vektor serangan lainnya.</li>
+</ol>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="komponen-integrasi">Komponen Integrasi<a href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf#komponen-integrasi" class="hash-link" aria-label="Direct link to Komponen Integrasi" title="Direct link to Komponen Integrasi">​</a></h2>
+<!-- -->
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="1-instalasi-crowdsec-agent">1. Instalasi CrowdSec Agent<a href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf#1-instalasi-crowdsec-agent" class="hash-link" aria-label="Direct link to 1. Instalasi CrowdSec Agent" title="Direct link to 1. Instalasi CrowdSec Agent">​</a></h3>
+<p>CrowdSec Agent bertugas membaca log HAProxy (<code>/var/log/haproxy.log</code>) dan mendeteksi anomali berdasarkan skenario (<em>scenarios</em>) yang telah dikonfigurasi.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="2-konfigurasi-haproxy-bouncer">2. Konfigurasi HAProxy Bouncer<a href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf#2-konfigurasi-haproxy-bouncer" class="hash-link" aria-label="Direct link to 2. Konfigurasi HAProxy Bouncer" title="Direct link to 2. Konfigurasi HAProxy Bouncer">​</a></h3>
+<p>Bouncer beroperasi di level HAProxy untuk menarik daftar IP yang harus diblokir dari CrowdSec Local API (LAPI).</p>
+<p>Berikut contoh konfigurasi ACL pada HAProxy:</p>
+<div class="language-haproxy codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-haproxy codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">frontend https-in</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    # Verifikasi blocklist dari CrowdSec</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    acl is_blacklisted src -f /etc/haproxy/crowdsec_blacklist.lst</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    http-request deny if is_blacklisted</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    # Jika lolos CrowdSec, kirim ke ModSecurity SPOA</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    filter spoe engine modsecurity config /etc/haproxy/modsec.conf</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    http-request deny if { var(txn.modsec.code) -m int gt 0 }</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    default_backend web-servers</span><br></span></code></pre></div></div>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="perbandingan-dengan-single-layer-defense">Perbandingan dengan Single-Layer Defense<a href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf#perbandingan-dengan-single-layer-defense" class="hash-link" aria-label="Direct link to Perbandingan dengan Single-Layer Defense" title="Direct link to Perbandingan dengan Single-Layer Defense">​</a></h2>
+<table><thead><tr><th>Aspek</th><th>ModSecurity Saja</th><th>CrowdSec + ModSecurity</th></tr></thead><tbody><tr><td><strong>Inspeksi Konten</strong></td><td>✅ Ya</td><td>✅ Ya</td></tr><tr><td><strong>Reputasi IP</strong></td><td>❌ Tidak</td><td>✅ Ya</td></tr><tr><td><strong>Community Intelligence</strong></td><td>❌ Tidak</td><td>✅ Ya</td></tr><tr><td><strong>Efisiensi Resource</strong></td><td>Sedang</td><td>Tinggi (IP jahat diblokir lebih awal)</td></tr><tr><td><strong>Pembaruan Otomatis</strong></td><td>Manual</td><td>Otomatis (real-time)</td></tr></tbody></table>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="keunggulan-utama">Keunggulan Utama<a href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf#keunggulan-utama" class="hash-link" aria-label="Direct link to Keunggulan Utama" title="Direct link to Keunggulan Utama">​</a></h2>
+<ol>
+<li>
+<p><strong>Efisiensi Resource</strong> — Serangan dari IP yang telah teridentifikasi dalam blocklist CrowdSec langsung ditolak tanpa perlu diproses oleh ModSecurity SPOA, sehingga mengurangi beban komputasi.</p>
+</li>
+<li>
+<p><strong>Pembaruan Real-time</strong> — Basis data IP berbahaya diperbarui secara berkelanjutan oleh ribuan pengguna CrowdSec di seluruh dunia.</p>
+</li>
+<li>
+<p><strong>Visibilitas Komprehensif</strong> — Seluruh aktivitas ancaman dapat dipantau melalui CrowdSec Console dan CLI (<code>cscli</code>) yang menyediakan antarmuka yang intuitif.</p>
+</li>
+</ol>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="kesimpulan">Kesimpulan<a href="https://your-docusaurus-site.example.com/blog/2022/05/01/2022/kombinasi-crowdsec-dan-haproxy-waf#kesimpulan" class="hash-link" aria-label="Direct link to Kesimpulan" title="Direct link to Kesimpulan">​</a></h2>
+<p>Penggabungan <strong>ModSecurity</strong> untuk inspeksi konten dan <strong>CrowdSec</strong> untuk reputasi IP pada <strong>HAProxy</strong> merupakan implementasi strategi <em>Defense in Depth</em> yang solid dan efisien. Arsitektur ini tidak hanya meningkatkan keamanan secara signifikan, tetapi juga mengoptimalkan penggunaan resource server.</p>
+<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>Langkah Selanjutnya</div><div class="admonitionContent_BuS1"><p>Pertimbangkan untuk mendaftarkan instance CrowdSec Anda ke <a href="https://app.crowdsec.net/" target="_blank" rel="noopener noreferrer">CrowdSec Console</a> untuk mendapatkan visibilitas yang lebih baik terhadap ancaman yang terdeteksi.</p></div></div>]]></content>
+        <author>
+            <name>Mamat Nurahmat</name>
+            <uri>https://github.com/mamatnurahmat</uri>
+        </author>
+        <category label="Security" term="Security"/>
+        <category label="CrowdSec" term="CrowdSec"/>
+        <category label="HAProxy" term="HAProxy"/>
+        <category label="WAF" term="WAF"/>
+        <category label="DevOps" term="DevOps"/>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Membangun Benteng Pertahanan: WAF dengan ModSecurity, HAProxy, dan OWASP CRS]]></title>
+        <title type="html"><![CDATA[Membangun Web Application Firewall (WAF) dengan HAProxy, ModSecurity, dan OWASP CRS]]></title>
         <id>https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity</id>
         <link href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity"/>
         <updated>2022-01-01T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[Halo semua! Keamanan aplikasi adalah harga mati, terutama kalau aplikasi kita sudah go public. Salah satu cara terbaik untuk melindunginya adalah dengan memasang WAF (Web Application Firewall).]]></summary>
-        <content type="html"><![CDATA[<p>Halo semua! Keamanan aplikasi adalah harga mati, terutama kalau aplikasi kita sudah <em>go public</em>. Salah satu cara terbaik untuk melindunginya adalah dengan memasang <strong>WAF (Web Application Firewall)</strong>.</p>
-<p>Hari ini kita akan bahas kombinasi maut: <strong>HAProxy</strong>, <strong>ModSecurity (SPOA)</strong>, dan <strong>OWASP Core Rule Set (CRS)</strong>.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="konsep-dasar">Konsep Dasar<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#konsep-dasar" class="hash-link" aria-label="Direct link to Konsep Dasar" title="Direct link to Konsep Dasar">​</a></h3>
-<p>Kenapa kombinasi ini? HAProxy sangat kencang sebagai load balancer, tapi dia tidak didesain untuk memeriksa isi paket HTTP secara mendalam (seperti mendeteksi SQL Injection). Di sinilah ModSecurity berperan sebagai "polisi" yang memeriksa setiap request.</p>
-<p>Karena ModSecurity biasanya berbentuk modul (seperti di Nginx/Apache), untuk HAProxy kita menggunakan bantuan <strong>SPOA (Stream Processing Offload Agent)</strong>. Jadi HAProxy mengirimkan data request ke agen ModSecurity terpisah, diperiksa, lalu agen memberi tahu HAProxy apakah request itu boleh lewat atau harus diblokir.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="komponen-utama">Komponen Utama<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#komponen-utama" class="hash-link" aria-label="Direct link to Komponen Utama" title="Direct link to Komponen Utama">​</a></h3>
-<ol>
-<li><strong>HAProxy</strong>: Sebagai pintu gerbang utama.</li>
-<li><strong>ModSecurity SPOA</strong>: Agen yang menjalankan engine ModSecurity.</li>
-<li><strong>OWASP CRS</strong>: Kumpulan aturan (rules) sakti yang sudah diprogram untuk menangkal serangan umum seperti XSS, SQLi, dan Local File Inclusion.</li>
-</ol>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="cara-implementasi-singkat">Cara Implementasi Singkat<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#cara-implementasi-singkat" class="hash-link" aria-label="Direct link to Cara Implementasi Singkat" title="Direct link to Cara Implementasi Singkat">​</a></h3>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="1-persiapkan-modsecurity-spoa">1. Persiapkan ModSecurity SPOA<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#1-persiapkan-modsecurity-spoa" class="hash-link" aria-label="Direct link to 1. Persiapkan ModSecurity SPOA" title="Direct link to 1. Persiapkan ModSecurity SPOA">​</a></h4>
-<p>Gunakan image dari <code>jcmoraisjr/modsecurity-spoa</code>. Di sini engine ModSecurity akan menunggu kiriman data dari HAProxy melalui protokol SPOP.</p>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="2-pasang-owasp-crs">2. Pasang OWASP CRS<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#2-pasang-owasp-crs" class="hash-link" aria-label="Direct link to 2. Pasang OWASP CRS" title="Direct link to 2. Pasang OWASP CRS">​</a></h4>
-<p>Pastikan file rules dari <code>coreruleset/coreruleset</code> dimuat ke dalam konfigurasi ModSecurity Anda. Aturan-aturan inilah yang akan mendeteksi pola serangan.</p>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="3-konfigurasi-haproxy">3. Konfigurasi HAProxy<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#3-konfigurasi-haproxy" class="hash-link" aria-label="Direct link to 3. Konfigurasi HAProxy" title="Direct link to 3. Konfigurasi HAProxy">​</a></h4>
-<p>Tambahkan blok <code>filter spoe</code> di bagian frontend HAProxy:</p>
+        <summary type="html"><![CDATA[WAF HAProxy ModSecurity Banner]]></summary>
+        <content type="html"><![CDATA[<p><img decoding="async" loading="lazy" alt="WAF HAProxy ModSecurity Banner" src="https://your-docusaurus-site.example.com/assets/images/waf-haproxy-modsecurity-4734c14977fe92ff9a36670ac0508941.png" width="640" height="640" class="img_ev3q"></p>
+<p>Keamanan aplikasi merupakan aspek krusial yang tidak dapat diabaikan, terutama ketika aplikasi telah dipublikasikan ke jaringan publik. Salah satu mekanisme pertahanan terdepan yang direkomendasikan oleh para praktisi keamanan adalah penerapan <strong>Web Application Firewall (WAF)</strong>.</p>
+<p>Artikel ini membahas implementasi WAF menggunakan kombinasi <strong>HAProxy</strong>, <strong>ModSecurity (SPOA)</strong>, dan <strong>OWASP Core Rule Set (CRS)</strong> — sebuah arsitektur pertahanan yang terbukti efektif dalam melindungi aplikasi web dari berbagai vektor serangan.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="latar-belakang">Latar Belakang<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#latar-belakang" class="hash-link" aria-label="Direct link to Latar Belakang" title="Direct link to Latar Belakang">​</a></h2>
+<p>HAProxy dikenal sebagai load balancer dengan performa tinggi. Namun, secara desain, HAProxy tidak dioptimalkan untuk melakukan inspeksi mendalam terhadap konten HTTP (<em>Deep Packet Inspection</em>). Untuk mengatasi keterbatasan ini, diperlukan komponen tambahan yang berfungsi sebagai mesin analisis keamanan — yaitu <strong>ModSecurity</strong>.</p>
+<p>Karena ModSecurity pada umumnya beroperasi sebagai modul pada web server (seperti Nginx atau Apache), integrasi dengan HAProxy dilakukan melalui mekanisme <strong>Stream Processing Offload Agent (SPOA)</strong>. Dengan pendekatan ini, HAProxy mengirimkan data request ke agen ModSecurity yang berjalan secara terpisah untuk dianalisis.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="arsitektur-sistem">Arsitektur Sistem<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#arsitektur-sistem" class="hash-link" aria-label="Direct link to Arsitektur Sistem" title="Direct link to Arsitektur Sistem">​</a></h2>
+<p>Berikut adalah diagram arsitektur integrasi ketiga komponen tersebut:</p>
+<!-- -->
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="komponen-utama">Komponen Utama<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#komponen-utama" class="hash-link" aria-label="Direct link to Komponen Utama" title="Direct link to Komponen Utama">​</a></h2>
+<table><thead><tr><th>Komponen</th><th>Fungsi</th></tr></thead><tbody><tr><td><strong>HAProxy</strong></td><td>Berperan sebagai pintu gerbang utama (<em>reverse proxy</em> dan <em>load balancer</em>)</td></tr><tr><td><strong>ModSecurity SPOA</strong></td><td>Agen yang menjalankan engine ModSecurity untuk analisis request</td></tr><tr><td><strong>OWASP CRS</strong></td><td>Kumpulan aturan keamanan yang mendeteksi serangan umum (XSS, SQLi, LFI, dll.)</td></tr></tbody></table>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="langkah-implementasi">Langkah Implementasi<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#langkah-implementasi" class="hash-link" aria-label="Direct link to Langkah Implementasi" title="Direct link to Langkah Implementasi">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="1-menyiapkan-modsecurity-spoa">1. Menyiapkan ModSecurity SPOA<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#1-menyiapkan-modsecurity-spoa" class="hash-link" aria-label="Direct link to 1. Menyiapkan ModSecurity SPOA" title="Direct link to 1. Menyiapkan ModSecurity SPOA">​</a></h3>
+<p>Gunakan container image <code>jcmoraisjr/modsecurity-spoa</code>. Engine ModSecurity akan menunggu pengiriman data dari HAProxy melalui protokol <strong>SPOP</strong> (<em>Stream Processing Offload Protocol</em>).</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="2-memasang-owasp-core-rule-set">2. Memasang OWASP Core Rule Set<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#2-memasang-owasp-core-rule-set" class="hash-link" aria-label="Direct link to 2. Memasang OWASP Core Rule Set" title="Direct link to 2. Memasang OWASP Core Rule Set">​</a></h3>
+<p>Pastikan file-file rules dari repository <code>coreruleset/coreruleset</code> dimuat ke dalam konfigurasi ModSecurity. Aturan-aturan ini yang akan mendeteksi pola-pola serangan yang telah teridentifikasi.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="3-konfigurasi-haproxy-frontend">3. Konfigurasi HAProxy Frontend<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#3-konfigurasi-haproxy-frontend" class="hash-link" aria-label="Direct link to 3. Konfigurasi HAProxy Frontend" title="Direct link to 3. Konfigurasi HAProxy Frontend">​</a></h3>
+<p>Tambahkan blok <code>filter spoe</code> pada bagian frontend HAProxy:</p>
 <div class="language-haproxy codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-haproxy codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">frontend https-in</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    bind *:443 ssl crt /etc/ssl/certs/site.pem</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    filter spoe engine modsecurity config /etc/haproxy/modsec.conf</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    http-request deny if { var(txn.modsec.code) -m int gt 0 }</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    default_backend web-servers</span><br></span></code></pre></div></div>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="4-hubungkan-via-spoe-config">4. Hubungkan via SPOE Config<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#4-hubungkan-via-spoe-config" class="hash-link" aria-label="Direct link to 4. Hubungkan via SPOE Config" title="Direct link to 4. Hubungkan via SPOE Config">​</a></h4>
-<p>Buat file <code>modsec.conf</code> untuk memberi tahu HAProxy ke mana harus mengirim data:</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="4-konfigurasi-spoe">4. Konfigurasi SPOE<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#4-konfigurasi-spoe" class="hash-link" aria-label="Direct link to 4. Konfigurasi SPOE" title="Direct link to 4. Konfigurasi SPOE">​</a></h3>
+<p>Buat file <code>modsec.conf</code> untuk menghubungkan HAProxy dengan agen ModSecurity:</p>
 <div class="language-haproxy codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-haproxy codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">[modsecurity]</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">spoe-agent modsecurity-agent</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    messages check-request</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    option var-prefix modsec</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    timeout hello      100ms</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    timeout idle       30s</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    timeout processing 500ms</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    use-backend modsec-cluster</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">spoe-message check-request</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    args method path query version headers payload</span><br></span></code></pre></div></div>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="kenapa-ini-keren">Kenapa Ini Keren?<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#kenapa-ini-keren" class="hash-link" aria-label="Direct link to Kenapa Ini Keren?" title="Direct link to Kenapa Ini Keren?">​</a></h3>
-<p>Dengan memisahkan proses pemeriksaan (offloading) ke agen terpisah, load balancer HAProxy Anda tetap bisa fokus melayani traffic dengan kencang, sementara keamanan tetap terjaga ketat oleh ModSecurity.</p>
-<p>Jadi, jangan biarkan aplikasi Anda "telanjang" di internet ya! Pasang WAF sekarang juga. 🛡️💻</p>
-<p><em>Stay Secure, Folks!</em></p>]]></content>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="alur-pemrosesan-request">Alur Pemrosesan Request<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#alur-pemrosesan-request" class="hash-link" aria-label="Direct link to Alur Pemrosesan Request" title="Direct link to Alur Pemrosesan Request">​</a></h2>
+<!-- -->
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="keunggulan-arsitektur-ini">Keunggulan Arsitektur Ini<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#keunggulan-arsitektur-ini" class="hash-link" aria-label="Direct link to Keunggulan Arsitektur Ini" title="Direct link to Keunggulan Arsitektur Ini">​</a></h2>
+<ol>
+<li>
+<p><strong>Pemisahan Tanggung Jawab (<em>Separation of Concerns</em>)</strong> — Proses inspeksi keamanan dilakukan secara terpisah (<em>offloading</em>) sehingga load balancer HAProxy tetap dapat melayani traffic dengan performa optimal.</p>
+</li>
+<li>
+<p><strong>Skalabilitas</strong> — ModSecurity SPOA dapat di-<em>scale</em> secara independen sesuai dengan volume traffic yang perlu diinspeksi.</p>
+</li>
+<li>
+<p><strong>Standar Industri</strong> — OWASP CRS merupakan kumpulan aturan keamanan yang diakui secara global dan terus diperbarui oleh komunitas keamanan siber.</p>
+</li>
+</ol>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="kesimpulan">Kesimpulan<a href="https://your-docusaurus-site.example.com/blog/2022/01/01/2022/membangun-waf-dengan-haproxy-dan-modsecurity#kesimpulan" class="hash-link" aria-label="Direct link to Kesimpulan" title="Direct link to Kesimpulan">​</a></h2>
+<p>Implementasi WAF menggunakan kombinasi HAProxy, ModSecurity SPOA, dan OWASP CRS merupakan pendekatan yang efektif untuk melindungi aplikasi web dari berbagai ancaman keamanan. Dengan arsitektur <em>offloading</em> ini, keamanan dan performa dapat berjalan secara beriringan tanpa saling mengorbankan.</p>
+<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>Rekomendasi</div><div class="admonitionContent_BuS1"><p>Pastikan untuk selalu memperbarui OWASP CRS ke versi terbaru agar perlindungan terhadap vektor serangan baru tetap optimal.</p></div></div>]]></content>
+        <author>
+            <name>Mamat Nurahmat</name>
+            <uri>https://github.com/mamatnurahmat</uri>
+        </author>
+        <category label="Security" term="Security"/>
+        <category label="WAF" term="WAF"/>
+        <category label="HAProxy" term="HAProxy"/>
+        <category label="DevOps" term="DevOps"/>
     </entry>
 </feed>
